@@ -16,7 +16,6 @@
         <th>Authors</th>
         <th>Category</th>
     </tr>
-    <c:forEach items="${books}" var="book">
         <tr>
             <td>${book.id}</td>
             <td>${book.title}</td>
@@ -32,7 +31,6 @@
             <td><a href="edit?id=${book.id}">Edit</a></td>
             <td><a href="remove?id=${book.id}" onclick="return confirm('Are you sure?')">Remove</a></td>
         </tr>
-    </c:forEach>
 </table>
 
 </body>

@@ -33,7 +33,6 @@ public class Book {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Setter(AccessLevel.NONE)
   private Long id;
 
   @Size(min = 5, message="{title.too.short.error}")
@@ -54,6 +53,11 @@ public class Book {
           joinColumns = @JoinColumn(name = "book_id"),
           inverseJoinColumns = @JoinColumn(name = "author_id"))
   private List<Author> authors = new ArrayList<>();
+
   @Min(1)
   private int pages;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @NotNull
+  private Category category;
 }

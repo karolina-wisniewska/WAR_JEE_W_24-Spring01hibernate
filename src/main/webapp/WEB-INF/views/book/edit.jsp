@@ -2,11 +2,11 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <html>
 <head>
-    <title>Add book</title>
+    <title>Edit book</title>
 </head>
 <body>
 
-<h3>Add book</h3>
+<h3>Edit book</h3>
 <style>
     .error {
         color:red;
@@ -14,7 +14,7 @@
 </style>
 
 <form:form method="post" modelAttribute="book">
-
+    <form:hidden path="id"/>
     <div>Title: <form:input path="title"/><form:errors path="title" cssClass="error"/></div>
     <div>Description: <form:input path="description"/><form:errors path="description" cssClass="error"/></div>
     <div>Rating: <form:input path="rating" type="number" min="1" max="10" value="1"/><form:errors path="rating" cssClass="error"/></div>

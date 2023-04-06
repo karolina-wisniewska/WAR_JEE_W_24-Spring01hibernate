@@ -1,69 +1,66 @@
 package pl.coderslab.controller;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
+import lombok.RequiredArgsConstructor;
+import org.springframework.orm.jpa.JpaSystemException;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
 import pl.coderslab.entity.Publisher;
 import pl.coderslab.service.PublisherService;
 
-import java.util.List;
-import java.util.Objects;
+@Controller
+@RequiredArgsConstructor
+public class PublisherController {
 
-@RestController
-class PublisherController {
+  private final PublisherService publisherService;
 
-    private final PublisherService publisherService;
+  @GetMapping("/publisher/add")
+  public String showAddPublisherForm(Model model) {
+    model.addAttribute("publisher", new Publisher());
+    return "publisher/add";
+  }
 
-    PublisherController(PublisherService publisherService) {
-        this.publisherService = publisherService;
+  @PostMapping("/publisher/add")
+  public String processAddPublisherForm(Publisher publisher) {
+    publisherService.save(publisher);
+    return "redirect:/publishers";
+  }
+
+  @GetMapping("/publisher/{id}")
+  public String getPublisher(@PathVariable Long id) {
+    Publisher publisher = publisherService.findById(id);
+    return publisher.toString();
+  }
+
+  @GetMapping(value = "/publishers", produces = "text/plain; charset=utf-8")
+  public String getPublishers(Model model) {
+    model.addAttribute("publishers", publisherService.findAll());
+    return "publisher/all";
+  }
+
+  @GetMapping("/publisher/edit/{id}")
+  public String showUpdatePublisherForm(Model model, @PathVariable Long id) {
+    model.addAttribute("publisher", publisherService.findById(id));
+    return "publisher/edit";
+  }
+
+  @PostMapping("/publisher/edit/{id}")
+  public String processUpdatePublisherForm(Publisher publisher) {
+    publisherService.update(publisher);
+    return "redirect:/publishers";
+  }
+
+  @RequestMapping("/publisher/delete/{id}")
+  public String deletePublisher(@PathVariable Long id) {
+    try {
+      publisherService.deleteById(id);
+    } catch (JpaSystemException e){
+      e.printStackTrace();
+      return "publisher/error";
     }
-
-    @PostMapping(path = "/publisher")
-    void save(@RequestParam String name) {
-
-        Publisher publisher = new Publisher();
-
-        publisher.setName(name);
-
-        publisherService.save(publisher);
-    }
-
-    @GetMapping(path = "/publisher/{id}", produces = "text/plain;charset=utf-8")
-    String findById(@PathVariable Long id) {
-
-        Publisher publisher = publisherService.findById(id);
-
-        return Objects.nonNull(publisher) ? publisher.toString() : "Nie znaleziono wydawcy o podanym id " + id;
-    }
-
-    // gets all publishers
-    @GetMapping(path = "/publishers", produces = "text/plain;charset=utf-8")
-    String findAll() {
-
-        final List<Publisher> publishers = publisherService.findAll();
-
-        return publishers.toString();
-    }
-
-    @PutMapping(path = "/publisher/{id}")
-    void update(@PathVariable Long id, @RequestParam String name) {
-
-        Publisher publisher = publisherService.findById(id);
-
-        if (Objects.nonNull(publisher)) {
-
-            publisher.setName(name);
-
-            publisherService.update(publisher);
-        }
-    }
-
-    @DeleteMapping(path = "/publisher/{id}")
-    void deleteById(@PathVariable Long id) {
-        publisherService.deleteById(id);
-    }
+    return "redirect:/publishers";
+  }
 }
